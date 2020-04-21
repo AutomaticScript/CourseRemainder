@@ -129,4 +129,5 @@ dmypy.json
 .pyre/
 
 .idea/
-*.xlsx
+input/*.xlsx
+img/
