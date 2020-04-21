@@ -5,8 +5,8 @@
 
 ## Excel Filtering
 
-1. Library
+1. Use `OpenPyXl` Library to filter out needed students
 
 ## Android Automation
 
-1. Use `UIAutomator2` Library to automate the same things as `Selenium` did
+1. Use `UIAutomator2` Library to automate similar things as `Selenium` did
