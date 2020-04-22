@@ -129,5 +129,6 @@ dmypy.json
 .pyre/
 
 .idea/
-input/*.xlsx
+input/
+inputs/
 img/

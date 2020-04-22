@@ -54,6 +54,7 @@ class SeleniumTry:
                 )
             )
             element.click()
+            time.sleep(2)
             # move back to the base tab
             window_after = driver.window_handles[0]
             driver.switch_to.window(window_after)
