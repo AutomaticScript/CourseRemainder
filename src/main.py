@@ -11,8 +11,8 @@ custom_message_no_scholarship = \
 
 
 def foo():
-    selenium_try = SeleniumTry()
-    selenium_try.clicks()
+    # selenium_try = SeleniumTry()
+    # selenium_try.clicks()
 
     excel_try = ExcelTry()
     excel_try.filters()
@@ -26,8 +26,10 @@ def foo():
     #     print(student.name)
     #     ui.send_message(student, 2, custom_message_with_scholarship)
 
-    # for student in excel_try.custom_no_scholarship_list:
-    #     ui.send_message(student, 3, custom_message_no_scholarship)
+    for student in excel_try.custom_no_scholarship_list:
+        print(student.class_index)
+        print(student.name)
+        ui.send_message(student, 3, custom_message_no_scholarship)
 
 
 if __name__ == "__main__":

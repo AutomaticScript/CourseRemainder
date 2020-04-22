@@ -26,8 +26,8 @@ class ExcelTry:
                        ]
         count = 0
         for file_name in input_files:
-            if '8班' in file_name:
-                continue
+            # if '8班' in file_name:
+            #     continue
             print(file_name)
             workbook = load_workbook(filename=SeleniumTry.download_dir + '/' + file_name)
             sheet = workbook.get_sheet_by_name('学生运营')
@@ -46,7 +46,7 @@ class ExcelTry:
             count = count + 1
             # if count > 0:
             #     break
-        self.print()
+        # self.print()
 
     def has_scholarship(self, state_str):
         if state_str is None:

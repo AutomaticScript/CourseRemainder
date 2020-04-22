@@ -11,11 +11,13 @@ class UIAutomator2Try:
     today = date.isoweekday(date.today())
 
     def send_message(self, student, flag, message):
-        # if student.name == "YOYO" and student.class_index == "懂你精品小班-Alicia.Shen 8班-20200422.xlsx":
-        #     self.stop = False
-        #     return
-        # if self.stop:
-        #     return
+        # 默默　12138 汪永姣18789552017 叮当喵～～  丿乀人生 唐丽芬 我要瘦瘦瘦 Aaron Bumblebee
+        # 娟子　wp HUI 8... Tina 猫
+        if "Bumblebee" in student.name:
+            self.stop = False
+            return
+        if self.stop:
+            return
 
         if flag == 1:
             message = message.replace("d", "XX", 1)
@@ -26,6 +28,8 @@ class UIAutomator2Try:
             message = message.replace("d", str(student.accumulate_in_week+student.learn_in_today), 1)
             message = message.replace("d", str(5-student.accumulate_in_week-student.learn_in_today), 1)
         elif flag == 3:
+            if student.accumulate_in_week + student.learn_in_today >= 3:
+                return
             message = message.replace("d", str(student.accumulate_in_week+student.learn_in_today), 1)
 
         self.d.app_start("com.tencent.mm", stop=True)
