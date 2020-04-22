@@ -16,9 +16,9 @@ class ExcelTry:
     custom_with_scholarship_list = []
     custom_no_scholarship_list = []
     student = Student()
-    # FIXME: for testing
-    # today = date.isoweekday(date.today())
-    today = 2
+    today = date.isoweekday(date.today())
+
+    # today = 2
 
     def filters(self):
         input_files = [f for f in listdir(SeleniumTry.download_dir)
@@ -26,7 +26,7 @@ class ExcelTry:
                        ]
         count = 0
         for file_name in input_files:
-            if not ('7班' in file_name or '13班' in file_name):
+            if '8班' in file_name:
                 continue
             print(file_name)
             workbook = load_workbook(filename=SeleniumTry.download_dir + '/' + file_name)
@@ -40,9 +40,10 @@ class ExcelTry:
                 line = [col.value for col in row]
                 self.construct_student(line, file_name)
                 # self.student.print()
+                # if self.student.name == "Yolanda":
                 self.judge_student()
 
-            count = count+1
+            count = count + 1
             # if count > 0:
             #     break
         self.print()
@@ -51,7 +52,7 @@ class ExcelTry:
         if state_str is None:
             return False
         first = int(state_str[0:state_str.find('/')])
-        second = int(state_str[state_str.find('/')+1:len(state_str)])
+        second = int(state_str[state_str.find('/') + 1:len(state_str)])
         if first + 1 == second:
             return True
         else:
@@ -63,36 +64,47 @@ class ExcelTry:
     def construct_student(self, line, file_name):
         self.student = Student()
         self.student.name = line[0]
+        self.student.class_index = file_name
         if '7班' in file_name or '13班' in file_name:
             self.student.class_type = 0
         else:
             self.student.class_type = 1
-        self.student.common_percentage_list = self.change_order(line[5:12], 8-self.today)
-        self.student.custom_minute_list = self.change_order(line[13:20], 7-self.today)
+
+        self.student.common_percentage_list = self.change_order(line[5:12], 8 - self.today)
+        common_notice_vector = []
+        for i in range(7):
+            common_notice_vector.append(False)
+        self.student.common_notice_vector = common_notice_vector
+        self.student.custom_minute_list = self.change_order(line[13:20], 7 - self.today)
         self.student.scholarship = self.has_scholarship(line[27])
 
     def judge_student(self):
         # 小班课
-        notice_vector = self.x[self.student.class_type][self.today-1]
+        notice_vector = self.x[self.student.class_type][self.today - 1]
         count = 0
+        append_flag = False
         for flag in notice_vector:
             if flag is '1' and self.student.common_percentage_list[count] < 0.7:
                 self.student.common_notice_vector[count] = True
-                self.common_notice_list.append(self.student)
-            count = count+1
+                append_flag = True
+                if self.student.name == 'Yolanda':
+                    self.student.print()
+            count = count + 1
+        if append_flag:
+            self.common_notice_list.append(self.student)
 
         # 定制学
         self.student.accumulate_in_week = 0
-        for i in range(self.today-1):
+        for i in range(self.today - 1):
             if self.student.custom_minute_list[i] >= 30.0:
-                self.student.accumulate_in_week = self.student.accumulate_in_week+1
+                self.student.accumulate_in_week = self.student.accumulate_in_week + 1
         self.student.learn_in_today = 0
-        if self.student.custom_minute_list[self.today-1] >= 30.0:
+        if self.student.custom_minute_list[self.today - 1] >= 30.0:
             self.student.learn_in_today = 1
 
         if self.student.scholarship:
-            self.student.remain_in_weak = 5-self.student.accumulate_in_week-self.student.learn_in_today
-            if self.student.remain_in_weak <= 8-self.today-self.student.learn_in_today:
+            self.student.remain_in_weak = 5 - self.student.accumulate_in_week - self.student.learn_in_today
+            if self.student.remain_in_weak <= 8 - self.today - self.student.learn_in_today:
                 self.custom_with_scholarship_list.append(self.student)
             else:
                 self.student.scholarship = False
@@ -105,12 +117,12 @@ class ExcelTry:
         print('### 学生分类情况 ###')
         for student in self.common_notice_list:
             student.print()
-        # print('--- 定制学情况有奖学金 ----')
-        # for student in self.custom_with_scholarship_list:
-        #     student.print()
-        # print('--- 定制学情况没有奖学金 ----')
-        # for student in self.custom_no_scholarship_list:
-        #     student.print()
+        print('--- 定制学情况有奖学金 ----')
+        for student in self.custom_with_scholarship_list:
+            student.print()
+        print('--- 定制学情况没有奖学金 ----')
+        for student in self.custom_no_scholarship_list:
+            student.print()
         print('###    end     ###')
 
 

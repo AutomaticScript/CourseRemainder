@@ -1,8 +1,9 @@
 class Student:
     name = ''
+    class_index = ''
     class_type = 0
     common_percentage_list = []
-    common_notice_vector = [False, False, False, False, False, False, False]
+    common_notice_vector = []
     custom_minute_list = []
     scholarship = False
     accumulate_in_week = 0
@@ -11,13 +12,17 @@ class Student:
 
     def print(self):
         print("### A student info: ###")
-        print(self.name)
-        print(self.class_type)
-        print(self.common_percentage_list)
+        print("姓名: " + self.name)
+        print("班级: " + self.class_index)
+        print()
+        print("班级类型 (A:0 or B:1): " + str(self.class_type))
+        print("小班课(周一到周日): " + ', '.join(str(e) for e in self.common_percentage_list))
+        print("小班课是否需要提醒: " + ', ')
         print(self.common_notice_vector)
-        print(self.custom_minute_list)
-        print(self.scholarship)
-        print(self.accumulate_in_week)
-        print(self.learn_in_today)
-        print(self.remain_in_weak)
+        print()
+        print("定制学(周一到周日): " + ', '.join(str(e) for e in self.custom_minute_list))
+        print("是否有奖学金: " + str(self.scholarship))
+        print("本周累计已学天数(不含今天): " + str(self.accumulate_in_week))
+        print("今天是否学习: " + str(self.learn_in_today))
+        print("还剩几天获得奖学金/助教奖励: " + str(self.remain_in_weak))
         print("###      done       ###")
