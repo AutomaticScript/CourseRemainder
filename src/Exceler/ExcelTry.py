@@ -25,6 +25,7 @@ class ExcelTry:
                        if isfile(join(SeleniumTry.download_dir, f)) and f.endswith('xlsx')
                        ]
         count = 0
+        # 按照班级顺序读数据
         for file_name in input_files:
             # if '8班' in file_name:
             #     continue
@@ -87,8 +88,6 @@ class ExcelTry:
             if flag is '1' and self.student.common_percentage_list[count] < 0.7:
                 self.student.common_notice_vector[count] = True
                 append_flag = True
-                if self.student.name == 'Yolanda':
-                    self.student.print()
             count = count + 1
         if append_flag:
             self.common_notice_list.append(self.student)
