@@ -34,7 +34,7 @@ class SeleniumTry:
             search_bar.clear()
             search_bar.send_keys(self.class_list[i])
             search_bar.send_keys(Keys.RETURN)
-            time.sleep(1)
+            time.sleep(3)
             # fit to click operation
             driver.execute_script("window.scrollBy(-document.body.scrollWidth,0)")
             element = WebDriverWait(driver, 10).until(
@@ -54,12 +54,12 @@ class SeleniumTry:
                 )
             )
             element.click()
-            time.sleep(2)
+            time.sleep(3)
             # move back to the base tab
             window_after = driver.window_handles[0]
             driver.switch_to.window(window_after)
 
-        time.sleep(2)
+        time.sleep(3)
         driver.quit()
         print('done')
 

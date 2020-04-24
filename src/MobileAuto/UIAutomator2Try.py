@@ -14,7 +14,7 @@ class UIAutomator2Try:
         '我要瘦瘦瘦',  # 未知
         'Aaron',  # 未知
         'Bumblebee',  # 未知
-        '一代人'  # 第一个弹出的是群: B8-2组
+        '一代人',  # 第一个弹出的是群: B8-2组
         'O',  # 第一个弹出的是群: 南京opt....
         '默默',  # 名字有未知字符,找不到此人
         'Allison',  # 弹出公众号
@@ -25,7 +25,16 @@ class UIAutomator2Try:
         '慕子',  # 弹出公众号
         '甘甘 甜树体育',   # 第一个弹出的是群:
         'Chloe 🍒苗苗🍒',  # 弹出公众号
-        '詹韵',    # 第一个弹出的是群:
+        '肥仔',  #
+        '十二',  # 没查到这个人
+        '淳',  # 删了我
+        '.',  # 删了我
+        '吴平娣',  # 没好友
+        'wen',  # 没好友
+        'Emily',  # 没好友
+        # 2020-04-24
+        '兔只🤣',  # 没好友
+        '喇木',  # 没好友, 7班
     ]
     duplicate_name = [
         '娟子',  # 未知
@@ -40,10 +49,17 @@ class UIAutomator2Try:
         '迷路',
         'Candy',
         '雯',
+        '。',
+        # 2020-04-24
+        '浩',  # 11班, 3个重复
+        '樂',  # 9班, 弹出的是'12 康乐'
+        'huihui',  # 9班, 弹出的是'12 慧慧'
+        '夕林语',  # 6班,不知为何给他发了两遍,已撤回
+        'Bella', # 7班,貌似也是两个人,不过我发送了
     ]
 
     d = u2.connect('dd019e6')
-    time_delay = 1
+    time_delay = 0.5
     stop = True
     today = date.isoweekday(date.today())
 
@@ -66,7 +82,10 @@ class UIAutomator2Try:
             message = message.replace("d", notice_days, 1)
         elif flag == 2:
             if self.today - (student.accumulate_in_week + student.learn_in_today) < 2:
+                print("****** 此人表现优秀, 无需提醒")
                 return
+            else:
+                print("****** 此人需要提醒")
             message = message.replace("d", str(self.today), 1)
             message = message.replace("d", str(student.accumulate_in_week + student.learn_in_today), 1)
             message = message.replace("d", str(5 - student.accumulate_in_week - student.learn_in_today), 1)
@@ -79,11 +98,13 @@ class UIAutomator2Try:
         # self.time_delay_in()
 
         # click search button
-        self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/f0f\"]").click()  # can be replaced with xpath
+        self.d.xpath('//*[@resource-id="com.tencent.mm:id/dhg"]/android.widget.ImageView[1]').click()
+        # self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/f0f\"]").click()  # can be replaced with xpath
 
         # send name
         self.time_delay_in()
         self.d.send_keys(student.name)
+        self.time_delay_in()
         self.time_delay_in()
 
         # click the first item
@@ -99,10 +120,10 @@ class UIAutomator2Try:
 
         # click send button
         self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/amb\"]").click()
+        print("****** 此人已经提醒了")
 
         for i in range(3):
             self.d.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
-            self.time_delay_in()
 
     def time_delay_in(self):
         time.sleep(self.time_delay)
