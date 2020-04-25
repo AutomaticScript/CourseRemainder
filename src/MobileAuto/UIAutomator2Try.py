@@ -23,7 +23,7 @@ class UIAutomator2Try:
         '18816741613',  # 查无此人
         '广',  # 查无此人
         '慕子',  # 弹出公众号
-        '甘甘 甜树体育',   # 第一个弹出的是群:
+        '甘甘 甜树体育',  # 第一个弹出的是群:
         'Chloe 🍒苗苗🍒',  # 弹出公众号
         '肥仔',  #
         '十二',  # 没查到这个人
@@ -35,6 +35,8 @@ class UIAutomator2Try:
         # 2020-04-24
         '兔只🤣',  # 没好友
         '喇木',  # 没好友, 7班
+        '萌萌萌😘😘😘',  # 公众号
+        'SLydia',  # 身体不好
     ]
     duplicate_name = [
         '娟子',  # 未知
@@ -55,75 +57,79 @@ class UIAutomator2Try:
         '樂',  # 9班, 弹出的是'12 康乐'
         'huihui',  # 9班, 弹出的是'12 慧慧'
         '夕林语',  # 6班,不知为何给他发了两遍,已撤回
-        'Bella', # 7班,貌似也是两个人,不过我发送了
+        'Bella',  # 7班,貌似也是两个人,不过我发送了
     ]
 
     d = u2.connect('dd019e6')
-    time_delay = 0.5
+    time_delay = 0.3
     stop = True
     today = date.isoweekday(date.today())
 
     def send_message(self, student, flag, message):
+        try:
+            if self.fail_or_duplicate(student):
+                return True
 
-        if self.fail_or_duplicate(student):
-            return
+            if flag == 1:
+                notice_days = ''
+                for i in range(7):
+                    if student.common_notice_vector[i]:
+                        if notice_days != '':
+                            notice_days = notice_days + ', '
+                        if i < self.today:
+                            notice_days = notice_days + '本周' + str(i + 1)
+                        elif i > self.today:
+                            notice_days = notice_days + '上周' + str(i + 1)
+                message = message.replace("d", str(self.today), 1)
+                message = message.replace("d", notice_days, 1)
+            elif flag == 2:
+                if self.today - (student.accumulate_in_week + student.learn_in_today) < 2:
+                    print("****** 此人表现优秀, 无需提醒")
+                    return True
+                else:
+                    print("****** 此人需要提醒")
+                message = message.replace("d", str(self.today), 1)
+                message = message.replace("d", str(student.accumulate_in_week + student.learn_in_today), 1)
+                message = message.replace("d", str(5 - student.accumulate_in_week - student.learn_in_today), 1)
+            elif flag == 3:
+                if student.accumulate_in_week + student.learn_in_today >= 3:
+                    return True
+                message = message.replace("d", str(student.accumulate_in_week + student.learn_in_today), 1)
 
-        if flag == 1:
-            notice_days = ''
-            for i in range(7):
-                if student.common_notice_vector[i]:
-                    if notice_days != '':
-                        notice_days = notice_days + ', '
-                    if i < self.today:
-                        notice_days = notice_days + '本周' + str(i + 1)
-                    elif i > self.today:
-                        notice_days = notice_days + '上周' + str(i + 1)
-            message = message.replace("d", str(self.today), 1)
-            message = message.replace("d", notice_days, 1)
-        elif flag == 2:
-            if self.today - (student.accumulate_in_week + student.learn_in_today) < 2:
-                print("****** 此人表现优秀, 无需提醒")
-                return
-            else:
-                print("****** 此人需要提醒")
-            message = message.replace("d", str(self.today), 1)
-            message = message.replace("d", str(student.accumulate_in_week + student.learn_in_today), 1)
-            message = message.replace("d", str(5 - student.accumulate_in_week - student.learn_in_today), 1)
-        elif flag == 3:
-            if student.accumulate_in_week + student.learn_in_today >= 3:
-                return
-            message = message.replace("d", str(student.accumulate_in_week + student.learn_in_today), 1)
+            # self.d.app_start("com.tencent.mm", stop=True)
+            # self.time_delay_in()
 
-        # self.d.app_start("com.tencent.mm", stop=True)
-        # self.time_delay_in()
+            # click search button
+            self.d.xpath('//*[@resource-id="com.tencent.mm:id/dhg"]/android.widget.ImageView[1]').click()
+            # self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/f0f\"]").click()  # can be replaced with xpath
 
-        # click search button
-        self.d.xpath('//*[@resource-id="com.tencent.mm:id/dhg"]/android.widget.ImageView[1]').click()
-        # self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/f0f\"]").click()  # can be replaced with xpath
+            # send name
+            self.time_delay_in()
+            self.d.send_keys(student.name)
+            self.time_delay_in()
+            self.time_delay_in()
 
-        # send name
-        self.time_delay_in()
-        self.d.send_keys(student.name)
-        self.time_delay_in()
-        self.time_delay_in()
+            # click the first item
+            self.d.click(122, 214)  # can be replaced with xpath
 
-        # click the first item
-        self.d.click(122, 214)  # can be replaced with xpath
+            # click the text pane
+            self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/fx6\"]").click()
 
-        # click the text pane
-        self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/fx6\"]").click()
+            # send notice message
+            # self.time_delay_in()
+            self.d.send_keys(message)
+            # self.time_delay_in()
 
-        # send notice message
-        self.time_delay_in()
-        self.d.send_keys(message)
-        self.time_delay_in()
+            # click send button
+            self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/amb\"]").click()
+            print("****** 此人已经提醒了")
 
-        # click send button
-        self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/amb\"]").click()
-        print("****** 此人已经提醒了")
-
-        for i in range(3):
-            self.d.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
+            for i in range(3):
+                self.d.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
+            return True
+        except Exception:
+            print("****** 脚本执行失败")
+            return False
 
     def time_delay_in(self):
         time.sleep(self.time_delay)
