@@ -8,63 +8,6 @@ from src.Exceler.ExcelTry import ExcelTry
 
 
 class UIAutomator2Try:
-    fail_name = [
-        '12138',  # 搜索排第一的是公众号
-        '汪永姣18789552017',  # 未知
-        '叮当喵～～',  # 未知
-        '丿乀人生',  # 未知
-        '唐丽芬',  # 未知
-        '我要瘦瘦瘦',  # 未知
-        'Aaron',  # 未知
-        'Bumblebee',  # 未知
-        '一代人',  # 第一个弹出的是群: B8-2组
-        'O',  # 第一个弹出的是群: 南京opt....
-        '默默',  # 名字有未知字符,找不到此人
-        'Allison',  # 弹出公众号
-        '风间澈',  # 查无此人
-        'Name7',  # 查无此人
-        '18816741613',  # 查无此人
-        '广',  # 查无此人
-        '慕子',  # 弹出公众号
-        '甘甘 甜树体育',  # 第一个弹出的是群:
-        'Chloe 🍒苗苗🍒',  # 弹出公众号
-        '肥仔',  #
-        '十二',  # 没查到这个人
-        '淳',  # 删了我
-        '.',  # 删了我
-        '吴平娣',  # 没好友
-        'wen',  # 没好友
-        'Emily',  # 没好友
-        # 2020-04-24
-        '兔只🤣',  # 没好友
-        '喇木',  # 没好友, 7班
-        '萌萌萌😘😘😘',  # 公众号
-        'SLydia',  # 身体不好
-    ]
-    duplicate_name = [
-        '娟子',  # 未知
-        'wp',  # 未知
-        'HUI',  # 未知
-        '8...',  # 未知
-        'Tina',  # 未知
-        '猫',  # 未知
-        'Anna',  #
-        '燕',
-        '甜',
-        '迷路',
-        'Candy',
-        '雯',
-        '。',
-        # 2020-04-24
-        '浩',  # 11班, 3个重复
-        '樂',  # 9班, 弹出的是'12 康乐'
-        'huihui',  # 9班, 弹出的是'12 慧慧'
-        '夕林语',  # 6班,不知为何给他发了两遍,已撤回
-        '夕',
-        'Bella',  # 7班,貌似也是两个人,不过我发送了
-        'Sun',  # 7班和13班会重复
-        '我',  # 我 和 我们
-    ]
 
     def __init__(self):
         self.device = u2.connect('dd019e6')
@@ -98,15 +41,26 @@ class UIAutomator2Try:
             # print(Exception)
             return False
 
+    index = 48
+
     def core_send_steps(self, flag, message, stu):
+        global keys
         self.print_log(stu, flag)
         # click the initial search button
         self.device.xpath('//*[@resource-id="com.tencent.mm:id/dhg"]/android.widget.ImageView[1]').click()
         # send student name to search bar
         # self.time_delay_in()
-        self.device.send_keys(stu.name)
+        if stu.class_index == 6:
+            keys = stu.name + ' ' + "AB"[stu.class_type] + str(stu.class_index)
+        elif stu.class_index == 8 or stu.class_index == 9:
+            keys = str(stu.class_index) + stu.name
+        elif stu.class_index == 10:
+            keys = str(stu.class_index) + 'A ' + stu.name
+        elif stu.class_index == 7 or stu.class_index == 11 or stu.class_index == 12 or stu.class_index == 13:
+            keys = str(stu.class_index) + ' ' + stu.name
+        self.device.send_keys(keys)
         self.time_delay_in()
-        self.time_delay_in()
+
         # FIXME: click the right one
         # self.device.click(122, 214)
         # click the text bar
@@ -115,6 +69,7 @@ class UIAutomator2Try:
         # self.device.send_keys(message)
         # click send message button
         # self.device.xpath("//*[@resource-id=\"com.tencent.mm:id/amb\"]").click()
+        self.device.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
         self.device.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
         print("****** 发送消息成功! ")
 
@@ -182,5 +137,6 @@ if __name__ == "__main__":
     excel_try.filters()
     for student in excel_try.students:
         index = 1 + excel_try.students.index(student)
-        print('****** 当前进度:' + str(index) + ' / ' + str(len(excel_try.students)))
-        ui.core_send_steps(flag=1, message="test", stu=student)
+        print('\n****** 当前进度:' + str(index) + ' / ' + str(len(excel_try.students)))
+        if index >= ui.index:
+            ui.core_send_steps(flag=1, message="test", stu=student)

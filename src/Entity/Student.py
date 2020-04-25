@@ -11,7 +11,7 @@ class Student:
     remain_in_weak = 0
 
     def print(self, flag):
-        print()
+
         print("###### 学生信息")
         print("###### 姓名: " + self.name)
         print("###### 班级: " + str(self.class_index))
@@ -31,5 +31,5 @@ class Student:
             print("###### 今天是否学习: " + str(self.learn_in_today))
             print("###### 还剩几天获得奖学金/助教奖励: " + str(self.remain_in_weak))
 
-        print("###### \n")
+        print("######")
 
