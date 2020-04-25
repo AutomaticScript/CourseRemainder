@@ -1,7 +1,13 @@
 import time
-from datetime import date
+from datetime import date, datetime
 
 import uiautomator2 as u2
+
+
+def print_log(student):
+    student.print()
+    time_stamp = datetime.now()
+    print('****** 当前时间:' + time_stamp.strftime('%Y.%m.%d-%H:%M:%S'))
 
 
 class UIAutomator2Try:
@@ -71,8 +77,10 @@ class UIAutomator2Try:
     def send_message(self, student, flag, message):
         try:
             if self.fail_or_duplicate(student):
+                print("****** 此人找不到/重名")
                 return True
 
+            print_log(student)
             if flag == 1:
                 notice_days = ''
                 for i in range(7):
@@ -90,8 +98,6 @@ class UIAutomator2Try:
                         or student.accumulate_in_week + student.learn_in_today >= 5:
                     print("****** 此人表现优秀, 无需提醒")
                     return True
-                else:
-                    print("****** 此人需要提醒")
                 message = message.replace("d", str(self.today), 1)
                 message = message.replace("d", str(student.accumulate_in_week + student.learn_in_today), 1)
                 message = message.replace("d", str(5 - student.accumulate_in_week - student.learn_in_today), 1)
@@ -121,11 +127,11 @@ class UIAutomator2Try:
 
             # send notice message
             # self.time_delay_in()
-            # self.d.send_keys(message)
+            self.d.send_keys(message)
             # self.time_delay_in()
 
             # click send button
-            # self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/amb\"]").click()
+            self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/amb\"]").click()
             print("****** 此人已经提醒了")
 
             for i in range(3):
@@ -139,12 +145,17 @@ class UIAutomator2Try:
         time.sleep(self.time_delay)
 
     def fail_or_duplicate(self, student):
+        ret_flag = False
         for failed in self.fail_name:
             if failed in student.name:
-                return True
+                ret_flag = True
+                break
         for duplicated in self.duplicate_name:
             if duplicated in student.name:
-                return True
+                ret_flag = True
+                break
+        if ret_flag:
+            print("dump")
         return False
 
     def initialize(self):

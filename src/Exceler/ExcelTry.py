@@ -105,9 +105,6 @@ class ExcelTry:
             self.student.remain_in_weak = 5 - self.student.accumulate_in_week - self.student.learn_in_today
             if self.student.remain_in_weak <= 8 - self.today - self.student.learn_in_today:
                 self.custom_with_scholarship_list.append(self.student)
-                if self.student.name == '我们':
-                    self.student.print()
-                    # exit()
             else:
                 self.student.scholarship = False
                 self.custom_no_scholarship_list.append(self.student)

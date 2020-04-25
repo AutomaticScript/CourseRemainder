@@ -26,3 +26,6 @@ class DataBase:
         self.cursor.execute('SELECT current_index FROM rerun_index WHERE class_name=?', values)
         return self.cursor.fetchone()[0]
 
+    def close(self):
+        self.conn.close()
+
