@@ -9,9 +9,9 @@ class Main:
     def __init__(self):
         # 三行分别是小班课, 定制学_有奖, 定制学_无奖
         self.messages = [
-            "今天周d,明天晚上还有新的小班课,不过小班课d还没学完，今儿都扫尾完成吧~",
-            "今天周d，本周奖学金打卡已经完成d次，需要5次才可以鸭，Keep going！",
-            "[定制学]本周定制学已完成d天，一周完成3天打卡，就可以拿到Alicia整理的本part精华词汇哦，再坚持一下吧~"
+            "[温馨提醒]今天周d，明天晚上还有新的小班课，不过小班课d还没学完，今儿都扫尾完成吧~",
+            "[温馨提醒]今天周d，本周奖学金打卡已经完成d次，需要5次才可以鸭，keep going！",
+            "[温馨提醒]今天周d，本周定制学已完成d天，一周完成3天打卡，就可以拿到 Alicia 整理的本 part 精华词汇哦，再坚持一下吧~"
         ]
 
         self.selenium_try = SeleniumTry()
@@ -27,7 +27,7 @@ class Main:
         self.excel_try.filters()
 
         # 初始化手机设置
-        self.ui.initialize()
+        self.ui.init_device()
 
         # 小班课提醒
         self.send_to_one_type(self.excel_try.common_notice_list, 1)
@@ -46,7 +46,7 @@ class Main:
             index = self.show_process(student, student_list)
             if index >= 0:
                 while not self.ui.send_message(student, notice_type, self.messages[notice_type-1]):
-                    self.ui.initialize()
+                    self.ui.init_device()
 
     def show_process(self, student, student_list):
         index = 1 + student_list.index(student)

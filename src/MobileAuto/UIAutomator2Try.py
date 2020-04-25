@@ -3,11 +3,7 @@ from datetime import date, datetime
 
 import uiautomator2 as u2
 
-
-def print_log(student):
-    student.print()
-    time_stamp = datetime.now()
-    print('****** 当前时间:' + time_stamp.strftime('%Y.%m.%d-%H:%M:%S'))
+from src.Entity.Student import Student
 
 
 class UIAutomator2Try:
@@ -69,10 +65,10 @@ class UIAutomator2Try:
         '我',  # 我 和 我们
     ]
 
-    d = u2.connect('dd019e6')
-    time_delay = 0.3
-    stop = True
-    today = date.isoweekday(date.today())
+    def __init__(self):
+        self.device = u2.connect('dd019e6')
+        self.time_delay = 0.3  # unit is second
+        self.today = date.isoweekday(date.today())
 
     def send_message(self, student, flag, message):
         try:
@@ -80,93 +76,104 @@ class UIAutomator2Try:
                 print("****** 此人找不到/重名")
                 return True
 
-            print_log(student)
+            message = message.replace("d", str(self.today), 1)
             if flag == 1:
-                notice_days = ''
-                for i in range(7):
-                    if student.common_notice_vector[i]:
-                        if notice_days != '':
-                            notice_days = notice_days + ', '
-                        if i < self.today:
-                            notice_days = notice_days + '本周' + str(i + 1)
-                        elif i > self.today:
-                            notice_days = notice_days + '上周' + str(i + 1)
-                message = message.replace("d", str(self.today), 1)
-                message = message.replace("d", notice_days, 1)
+                message = self.update_message_1(message, student)
             elif flag == 2:
                 if self.today - (student.accumulate_in_week + student.learn_in_today) < 2 \
                         or student.accumulate_in_week + student.learn_in_today >= 5:
-                    print("****** 此人表现优秀, 无需提醒")
                     return True
-                message = message.replace("d", str(self.today), 1)
-                message = message.replace("d", str(student.accumulate_in_week + student.learn_in_today), 1)
-                message = message.replace("d", str(5 - student.accumulate_in_week - student.learn_in_today), 1)
+                message = self.update_message_2(message, student)
             elif flag == 3:
                 if student.accumulate_in_week + student.learn_in_today >= 3:
                     return True
-                message = message.replace("d", str(student.accumulate_in_week + student.learn_in_today), 1)
+                message = self.update_message_3(message, student)
 
-            # self.d.app_start("com.tencent.mm", stop=True)
-            # self.time_delay_in()
-
-            # click search button
-            self.d.xpath('//*[@resource-id="com.tencent.mm:id/dhg"]/android.widget.ImageView[1]').click()
-            # self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/f0f\"]").click()  # can be replaced with xpath
-
-            # send name
-            self.time_delay_in()
-            self.d.send_keys(student.name)
-            self.time_delay_in()
-            self.time_delay_in()
-
-            # click the first item
-            self.d.click(122, 214)  # can be replaced with xpath
-
-            # click the text pane
-            self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/fx6\"]").click()
-
-            # send notice message
-            # self.time_delay_in()
-            self.d.send_keys(message)
-            # self.time_delay_in()
-
-            # click send button
-            self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/amb\"]").click()
-            print("****** 此人已经提醒了")
-
-            for i in range(3):
-                self.d.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
+            self.core_send_steps(flag, message, student)
             return True
+
         except Exception:
-            print("****** 脚本执行失败")
+            print("****** 发送消息失败, 准备自动重试")
+            # print(Exception)
             return False
+
+    def core_send_steps(self, flag, message, stu):
+        self.print_log(stu, flag)
+        # click the initial search button
+        self.device.xpath('//*[@resource-id="com.tencent.mm:id/dhg"]/android.widget.ImageView[1]').click()
+        # send student name to search bar
+        # self.time_delay_in()
+        self.device.send_keys(stu.name)
+        self.time_delay_in()
+        self.time_delay_in()
+        # FIXME: click the right one
+        self.device.click(122, 214)
+        # click the text bar
+        self.device.xpath("//*[@resource-id=\"com.tencent.mm:id/fx6\"]").click()
+        # send customized message
+        self.device.send_keys(message)
+        # click send message button
+        self.device.xpath("//*[@resource-id=\"com.tencent.mm:id/amb\"]").click()
+        print("****** 发送消息成功! ")
+        for i in range(3):
+            # return 3 times
+            self.device.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
+
+    def update_message_3(self, message, stu):
+        message = message.replace("d", str(stu.accumulate_in_week + stu.learn_in_today), 1)
+        return message
+
+    def update_message_2(self, message, stu):
+        message = message.replace("d", str(stu.accumulate_in_week + stu.learn_in_today), 1)
+        message = message.replace("d", str(5 - stu.accumulate_in_week - stu.learn_in_today), 1)
+        return message
+
+    def update_message_1(self, message, stu):
+        notice_days = ''
+        for i in range(7):
+            if stu.common_notice_vector[i]:
+                if notice_days != '':
+                    notice_days = notice_days + ', '
+                if i < self.today:
+                    notice_days = notice_days + '本周' + str(i + 1)
+                elif i > self.today:
+                    notice_days = notice_days + '上周' + str(i + 1)
+        message = message.replace("d", notice_days, 1)
+        return message
 
     def time_delay_in(self):
         time.sleep(self.time_delay)
 
-    def fail_or_duplicate(self, student):
+    def fail_or_duplicate(self, stu):
         ret_flag = False
         for failed in self.fail_name:
-            if failed in student.name:
+            if failed in stu.name:
                 ret_flag = True
                 break
         for duplicated in self.duplicate_name:
-            if duplicated in student.name:
+            if duplicated in stu.name:
                 ret_flag = True
                 break
         if ret_flag:
             print("dump")
         return False
 
-    def initialize(self):
-        self.d.app_start("com.tencent.mm", stop=True)
-        for i in range(3):
-            self.d.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
-            self.time_delay_in()
-        self.d.app_start("com.tencent.mm", stop=True)
+    def init_device(self):
+        self.device.app_start("com.tencent.mm", stop=True)
         self.time_delay_in()
+        for i in range(3):
+            self.device.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
+        self.device.app_start("com.tencent.mm", stop=True)
+        self.time_delay_in()
+
+    def print_log(self, stu, flag):
+        stu.print(flag)
+        time_stamp = datetime.now()
+        print('****** 当前时间:' + time_stamp.strftime('%Y.%m.%d-%H:%M:%S'))
 
 
 if __name__ == "__main__":
     ui = UIAutomator2Try()
-    ui.send_message()
+    student = Student()
+    student.name = "name"
+    ui.core_send_steps(flag=1, message="test", stu=student)

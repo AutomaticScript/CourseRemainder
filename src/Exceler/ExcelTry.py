@@ -65,7 +65,7 @@ class ExcelTry:
     def construct_student(self, line, file_name):
         self.student = Student()
         self.student.name = line[0]
-        self.student.class_index = file_name
+        self.student.class_index = file_name[19:file_name.rfind('班')]
         if '7班' in file_name or '13班' in file_name:
             self.student.class_type = 0
         else:
