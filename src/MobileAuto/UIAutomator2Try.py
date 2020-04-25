@@ -57,7 +57,10 @@ class UIAutomator2Try:
         '樂',  # 9班, 弹出的是'12 康乐'
         'huihui',  # 9班, 弹出的是'12 慧慧'
         '夕林语',  # 6班,不知为何给他发了两遍,已撤回
+        '夕',
         'Bella',  # 7班,貌似也是两个人,不过我发送了
+        'Sun',  # 7班和13班会重复
+        '我',  # 我 和 我们
     ]
 
     d = u2.connect('dd019e6')
@@ -83,7 +86,8 @@ class UIAutomator2Try:
                 message = message.replace("d", str(self.today), 1)
                 message = message.replace("d", notice_days, 1)
             elif flag == 2:
-                if self.today - (student.accumulate_in_week + student.learn_in_today) < 2:
+                if self.today - (student.accumulate_in_week + student.learn_in_today) < 2 \
+                        or student.accumulate_in_week + student.learn_in_today >= 5:
                     print("****** 此人表现优秀, 无需提醒")
                     return True
                 else:
@@ -117,11 +121,11 @@ class UIAutomator2Try:
 
             # send notice message
             # self.time_delay_in()
-            self.d.send_keys(message)
+            # self.d.send_keys(message)
             # self.time_delay_in()
 
             # click send button
-            self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/amb\"]").click()
+            # self.d.xpath("//*[@resource-id=\"com.tencent.mm:id/amb\"]").click()
             print("****** 此人已经提醒了")
 
             for i in range(3):
