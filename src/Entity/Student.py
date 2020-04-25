@@ -1,6 +1,6 @@
 class Student:
     name = ''
-    class_index = ''
+    class_index = 0
     class_type = 0
     common_percentage_list = []
     common_notice_vector = []
@@ -14,7 +14,7 @@ class Student:
         print()
         print("###### 学生信息")
         print("###### 姓名: " + self.name)
-        print("###### 班级: " + self.class_index)
+        print("###### 班级: " + str(self.class_index))
 
         if self.class_type == 0:
             print("###### 班级类型: A")

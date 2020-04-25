@@ -4,6 +4,7 @@ from datetime import date, datetime
 import uiautomator2 as u2
 
 from src.Entity.Student import Student
+from src.Exceler.ExcelTry import ExcelTry
 
 
 class UIAutomator2Try:
@@ -107,17 +108,19 @@ class UIAutomator2Try:
         self.time_delay_in()
         self.time_delay_in()
         # FIXME: click the right one
-        self.device.click(122, 214)
+        # self.device.click(122, 214)
         # click the text bar
-        self.device.xpath("//*[@resource-id=\"com.tencent.mm:id/fx6\"]").click()
+        # self.device.xpath("//*[@resource-id=\"com.tencent.mm:id/fx6\"]").click()
         # send customized message
-        self.device.send_keys(message)
+        # self.device.send_keys(message)
         # click send message button
-        self.device.xpath("//*[@resource-id=\"com.tencent.mm:id/amb\"]").click()
+        # self.device.xpath("//*[@resource-id=\"com.tencent.mm:id/amb\"]").click()
+        self.device.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
         print("****** 发送消息成功! ")
-        for i in range(3):
+
+        # for i in range(3):
             # return 3 times
-            self.device.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
+            # self.device.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
 
     def update_message_3(self, message, stu):
         message = message.replace("d", str(stu.accumulate_in_week + stu.learn_in_today), 1)
@@ -174,6 +177,10 @@ class UIAutomator2Try:
 
 if __name__ == "__main__":
     ui = UIAutomator2Try()
-    student = Student()
-    student.name = "name"
-    ui.core_send_steps(flag=1, message="test", stu=student)
+    ui.init_device()
+    excel_try = ExcelTry()
+    excel_try.filters()
+    for student in excel_try.students:
+        index = 1 + excel_try.students.index(student)
+        print('****** 当前进度:' + str(index) + ' / ' + str(len(excel_try.students)))
+        ui.core_send_steps(flag=1, message="test", stu=student)

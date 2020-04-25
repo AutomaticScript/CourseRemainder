@@ -17,6 +17,7 @@ class ExcelTry:
     custom_no_scholarship_list = []
     student = Student()
     today = date.isoweekday(date.today())
+    students = []
 
     # today = 2
 
@@ -24,11 +25,11 @@ class ExcelTry:
         input_files = [f for f in listdir(SeleniumTry.download_dir)
                        if isfile(join(SeleniumTry.download_dir, f)) and f.endswith('xlsx')
                        ]
+        input_files.sort(key=self.get_class_index)
+        # print(input_files)
         count = 0
         # 按照班级顺序读数据
         for file_name in input_files:
-            # if '8班' in file_name:
-            #     continue
             print(file_name)
             workbook = load_workbook(filename=SeleniumTry.download_dir + '/' + file_name)
             sheet = workbook.get_sheet_by_name('学生运营')
@@ -40,9 +41,9 @@ class ExcelTry:
                     continue
                 line = [col.value for col in row]
                 self.construct_student(line, file_name)
-                # self.student.print()
-                # if self.student.name == "Yolanda":
                 self.judge_student()
+                self.students.append(self.student)
+                # print(len(self.students))
 
             count = count + 1
             # if count > 0:
@@ -65,7 +66,7 @@ class ExcelTry:
     def construct_student(self, line, file_name):
         self.student = Student()
         self.student.name = line[0]
-        self.student.class_index = file_name[19:file_name.rfind('班')]
+        self.student.class_index = self.get_class_index(file_name)
         if '7班' in file_name or '13班' in file_name:
             self.student.class_type = 0
         else:
@@ -78,6 +79,9 @@ class ExcelTry:
         self.student.common_notice_vector = common_notice_vector
         self.student.custom_minute_list = self.change_order(line[13:20], 7 - self.today)
         self.student.scholarship = self.has_scholarship(line[27])
+
+    def get_class_index(self, file_name):
+        return int(file_name[19:file_name.rfind('班')])
 
     def judge_student(self):
         # 小班课
