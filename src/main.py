@@ -16,7 +16,7 @@ class Main:
 
         self.selenium_try = SeleniumTry()
         self.excel_try = ExcelTry()
-        self.data_base = DataBase()
+        # self.data_base = DataBase()
         self.ui = UIAutomator2Try()
 
     def integrate(self):
@@ -39,7 +39,7 @@ class Main:
         self.send_to_one_type(self.excel_try.custom_no_scholarship_list, 3)
 
         # 关闭数据库
-        self.data_base.close()
+        # self.data_base.close()
 
     def send_to_one_type(self, student_list, notice_type):
         for student in student_list:

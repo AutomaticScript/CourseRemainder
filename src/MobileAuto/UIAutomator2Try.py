@@ -3,45 +3,43 @@ from datetime import date, datetime
 
 import uiautomator2 as u2
 
-from src.Entity.Student import Student
 from src.Exceler.ExcelTry import ExcelTry
 
 
 class UIAutomator2Try:
 
     def __init__(self):
+        self.index = 0
         self.device = u2.connect('dd019e6')
         self.time_delay = 0.3  # unit is second
         self.today = date.isoweekday(date.today())
 
-    def send_message(self, student, flag, message):
+    def send_message(self, stu, flag, message):
         try:
-            if self.fail_or_duplicate(student):
+            if self.find_no_friend(stu):
                 print("****** 此人找不到/重名")
                 return True
 
             message = message.replace("d", str(self.today), 1)
             if flag == 1:
-                message = self.update_message_1(message, student)
+                message = self.update_message_1(message, stu)
             elif flag == 2:
-                if self.today - (student.accumulate_in_week + student.learn_in_today) < 2 \
-                        or student.accumulate_in_week + student.learn_in_today >= 5:
+                if self.today - (stu.accumulate_in_week + stu.learn_in_today) < 2 \
+                        or stu.accumulate_in_week + stu.learn_in_today >= 5:
                     return True
-                message = self.update_message_2(message, student)
+                message = self.update_message_2(message, stu)
             elif flag == 3:
-                if student.accumulate_in_week + student.learn_in_today >= 3:
+                if stu.accumulate_in_week + stu.learn_in_today >= 3:
                     return True
-                message = self.update_message_3(message, student)
+                message = self.update_message_3(message, stu)
 
-            self.core_send_steps(flag, message, student)
+            self.core_send_steps(flag, message, stu)
             return True
 
         except Exception:
             print("****** 发送消息失败, 准备自动重试")
             # print(Exception)
             return False
-
-    index = 48
 
     def core_send_steps(self, flag, message, stu):
         global keys
@@ -62,20 +60,19 @@ class UIAutomator2Try:
         self.time_delay_in()
 
         # FIXME: click the right one
-        # self.device.click(122, 214)
+        self.device.click(122, 214)
         # click the text bar
-        # self.device.xpath("//*[@resource-id=\"com.tencent.mm:id/fx6\"]").click()
+        self.device.xpath("//*[@resource-id=\"com.tencent.mm:id/fx6\"]").click()
         # send customized message
-        # self.device.send_keys(message)
+        self.device.send_keys(message)
         # click send message button
-        # self.device.xpath("//*[@resource-id=\"com.tencent.mm:id/amb\"]").click()
-        self.device.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
-        self.device.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
+        self.device.xpath("//*[@resource-id=\"com.tencent.mm:id/amb\"]").click()
+        # self.device.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
+        # self.device.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
         print("****** 发送消息成功! ")
 
-        # for i in range(3):
-            # return 3 times
-            # self.device.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
+        for i in range(3):
+            self.device.xpath("//*[@resource-id=\"com.android.systemui:id/back\"]").click()
 
     def update_message_3(self, message, stu):
         message = message.replace("d", str(stu.accumulate_in_week + stu.learn_in_today), 1)
@@ -102,18 +99,15 @@ class UIAutomator2Try:
     def time_delay_in(self):
         time.sleep(self.time_delay)
 
-    def fail_or_duplicate(self, stu):
-        ret_flag = False
-        for failed in self.fail_name:
+    no_friends = [
+        "一代人", "汪永姣18789552017",
+        "吴平娣", "wen", "Tina", "丿乀人生", "唐丽芬", "我要瘦瘦瘦", "Aaron", "雯", "Emily",
+    ]
+
+    def find_no_friend(self, stu):
+        for failed in self.no_friends:
             if failed in stu.name:
-                ret_flag = True
                 break
-        for duplicated in self.duplicate_name:
-            if duplicated in stu.name:
-                ret_flag = True
-                break
-        if ret_flag:
-            print("dump")
         return False
 
     def init_device(self):

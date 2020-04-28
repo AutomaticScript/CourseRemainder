@@ -111,10 +111,14 @@ class ExcelTry:
                 self.custom_with_scholarship_list.append(self.student)
             else:
                 self.student.scholarship = False
-                self.custom_no_scholarship_list.append(self.student)
+                # 跳过7班没有奖学金的人
+                if self.student.class_index != 7:
+                    self.custom_no_scholarship_list.append(self.student)
         else:
             self.student.remain_in_weak = 3 - self.student.accumulate_in_week - self.student.learn_in_today
-            self.custom_no_scholarship_list.append(self.student)
+            # 跳过7班没有奖学金的人
+            if self.student.class_index != 7:
+                self.custom_no_scholarship_list.append(self.student)
 
     def print(self):
         print('### 学生分类情况 ###')
