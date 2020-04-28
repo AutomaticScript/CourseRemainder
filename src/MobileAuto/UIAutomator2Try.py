@@ -17,10 +17,10 @@ class UIAutomator2Try:
     def send_message(self, stu, flag, message):
         try:
             if self.find_no_friend(stu):
-                print("****** 此人找不到/重名")
+                print("****** 此人非好友")
                 return True
 
-            message = message.replace("d", str(self.today), 1)
+            # message = message.replace("d", str(self.today), 1)
             if flag == 1:
                 message = self.update_message_1(message, stu)
             elif flag == 2:
@@ -48,15 +48,10 @@ class UIAutomator2Try:
         self.device.xpath('//*[@resource-id="com.tencent.mm:id/dhg"]/android.widget.ImageView[1]').click()
         # send student name to search bar
         # self.time_delay_in()
-        if stu.class_index == 6:
-            keys = stu.name + ' ' + "AB"[stu.class_type] + str(stu.class_index)
-        elif stu.class_index == 8 or stu.class_index == 9:
-            keys = str(stu.class_index) + stu.name
-        elif stu.class_index == 10:
-            keys = str(stu.class_index) + 'A ' + stu.name
-        elif stu.class_index == 7 or stu.class_index == 11 or stu.class_index == 12 or stu.class_index == 13:
-            keys = str(stu.class_index) + ' ' + stu.name
+
+        keys = str(stu.class_index) + ' ' + stu.name
         self.device.send_keys(keys)
+        self.time_delay_in()
         self.time_delay_in()
 
         # FIXME: click the right one
@@ -101,13 +96,13 @@ class UIAutomator2Try:
 
     no_friends = [
         "一代人", "汪永姣18789552017",
-        "吴平娣", "wen", "Tina", "丿乀人生", "唐丽芬", "我要瘦瘦瘦", "Aaron", "雯", "Emily",
+        "吴平娣", "wen", "Tina", "丿乀人生", "唐丽芬", "我要瘦瘦瘦", "Aaron", "雯", "Emily", "。",
     ]
 
     def find_no_friend(self, stu):
         for failed in self.no_friends:
-            if failed in stu.name:
-                break
+            if failed == stu.name or "默默" in failed:  # strange emoji
+                return True
         return False
 
     def init_device(self):

@@ -93,7 +93,7 @@ class ExcelTry:
                 self.student.common_notice_vector[count] = True
                 append_flag = True
             count = count + 1
-        if append_flag:
+        if append_flag and self.student.class_index != 7:
             self.common_notice_list.append(self.student)
 
         # 定制学
